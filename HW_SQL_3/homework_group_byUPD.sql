@@ -33,15 +33,15 @@ USE WideWorldImporters;
 SELECT YEAR(i.InvoiceDate) AS [Year], 
 	MONTH(i.InvoiceDate) AS [Month],
 	s.StockItemName, 
-	SUM(s.UnitPrice) AS [SumPrice], 
+	SUM(s.UnitPrice * il.Quantity) AS [SumPrice], 
 	AVG(s.UnitPrice) AS [AvgSum]
 FROM Sales.Invoices  i
 JOIN Sales.InvoiceLines  il
 ON i.InvoiceID = il.InvoiceID
 JOIN Warehouse.StockItems s
 ON il.StockItemID = s.StockItemID
-WHERE YEAR(i.InvoiceDate) = 2015 
-AND MONTH(i.InvoiceDate) = 4
+/*WHERE YEAR(i.InvoiceDate) = 2015 
+AND MONTH(i.InvoiceDate) = 4*/
 GROUP BY YEAR(i.InvoiceDate), MONTH(i.InvoiceDate), s.StockItemName
 ORDER BY YEAR(i.InvoiceDate), MONTH(i.InvoiceDate), s.StockItemName
 
@@ -61,16 +61,16 @@ ORDER BY YEAR(i.InvoiceDate), MONTH(i.InvoiceDate), s.StockItemName
 SELECT YEAR(i.InvoiceDate) AS [Year], 
 	MONTH(i.InvoiceDate) AS [Month],
 	s.StockItemName, 
-	SUM(s.UnitPrice) AS [SumPrice]
+	SUM(s.UnitPrice * il.Quantity) AS [SumPrice]
 FROM Sales.Invoices  i
 JOIN Sales.InvoiceLines  il
 ON i.InvoiceID = il.InvoiceID
 JOIN Warehouse.StockItems s
 ON il.StockItemID = s.StockItemID
-WHERE YEAR(i.InvoiceDate) = 2015 
-AND MONTH(i.InvoiceDate) = 4
+/*WHERE YEAR(i.InvoiceDate) = 2015 
+AND MONTH(i.InvoiceDate) = 4*/
 GROUP BY YEAR(i.InvoiceDate), MONTH(i.InvoiceDate), s.StockItemName
-HAVING SUM(s.UnitPrice) > 46000
+HAVING SUM(s.UnitPrice * il.Quantity) > 4600000
 ORDER BY YEAR(i.InvoiceDate), MONTH(i.InvoiceDate), s.StockItemName;
 
 /*
@@ -94,14 +94,14 @@ SELECT YEAR(i.InvoiceDate) AS [Year],
 	MONTH(i.InvoiceDate) AS [Month],
 	s.StockItemName, 
 	SUM(s.UnitPrice) AS [SumPrice],
-	COUNT(s.StockItemName) AS [Quantity sold]
+	SUM(il.Quantity) AS [Quantity sold]
 FROM Sales.Invoices  i
 JOIN Sales.InvoiceLines  il
 ON i.InvoiceID = il.InvoiceID
 JOIN Warehouse.StockItems s
 ON il.StockItemID = s.StockItemID
 GROUP BY YEAR(i.InvoiceDate), MONTH(i.InvoiceDate), s.StockItemName
-HAVING COUNT(s.StockItemName) < 50
+HAVING SUM(il.Quantity) < 50
 ORDER BY YEAR(i.InvoiceDate), MONTH(i.InvoiceDate), s.StockItemName;
 -- ---------------------------------------------------------------------------
 -- Опционально
