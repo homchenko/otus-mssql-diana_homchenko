@@ -38,7 +38,20 @@ USE WideWorldImporters
 Нарастающий итог должен быть без оконной функции.
 */
 
-
+SELECT CustomerTransactionId,
+	CustomerId,
+	TransactionDate,
+	TaxAmount,
+	(
+		SELECT SUM(TaxAmount)
+		FROM Sales.CustomerTransactions AS CT_sub
+		WHERE CT_sub.CustomerTransactionID = CT_sub.CustomerTransactionID
+		AND MONTH(CT_sub.TransactionDate) <= MONTH(CT.TransactionDate)
+	) AS SumTaxAmount
+FROM Sales.CustomerTransactions AS CT
+WHERE YEAR(TransactionDate) > 2014
+AND TaxAmount > 0
+ORDER BY CustomerId, TransactionDate, SumTaxAmount;
 
 /*
 2. Сделайте расчет суммы нарастающим итогом в предыдущем запросе с помощью оконной функции.
